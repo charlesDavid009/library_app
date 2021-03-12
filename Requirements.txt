@@ -1,0 +1,11 @@
+django
+djangorestframework
+django-filter
+markdown
+pyjwt
+pillow
+redis
+django-channels
+pymongo
+django-taggit
+
