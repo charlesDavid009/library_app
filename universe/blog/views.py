@@ -60,8 +60,9 @@ class BlogCreatePostView(generics.CreateAPIView):
     def get_queryset(self):
         return Blog.objects.all()
 
-    def perform_create(self, request, serializer):
-        serializer.save(user = self.request.user)
+    def perform_create(self, serializer):
+        users = self.request.user
+        serializer.save(user= users)
 
 class BlogDraftRUDView(generics.RetrieveUpdateDestroyAPIView):
     lookup                  = 'pk'
@@ -70,6 +71,8 @@ class BlogDraftRUDView(generics.RetrieveUpdateDestroyAPIView):
 
     def get_queryset(self):
         return Blog.drafts.all()
+
+
 class BlogDraftListView(generics.ListAPIView):
     """
     Get All Drafts
@@ -248,7 +251,8 @@ class CommentCreatePostView(generics.CreateAPIView):
         return Comment.objects.all()
 
     def perform_create(self, serializer):
-        serializer.save(user=self.request.user)
+        users=self.request.user
+        serializer.save(user=users)
 
 
 class CommentPostListView(generics.ListAPIView):
@@ -341,7 +345,8 @@ class SubCommentCreatePostView(generics.CreateAPIView):
         return SubComment.objects.all()
 
     def perform_create(self, serializer):
-        serializer.save(user=self.request.user)
+        users=self.request.user
+        serializer.save(user=users)
 
 
 class SubCommentPostListView(generics.ListAPIView):

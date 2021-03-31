@@ -10,17 +10,11 @@ class CreateBlogSerializer(serializers.ModelSerializer):
     created = serializers.DateTimeField(read_only=True)
     class Meta:
         model = Blog
-        fields = [ 'id', 'title', 'content', 'picture', 'status', 'tags', 'created']
-
+        fields = [ 'id', 'title', 'content', 'picture', 'status', 'created']
 
     def create(self, validated_data):
         return Blog.objects.create(**validated_data)
 
-    def update(self, instance, validated_data):
-        instance.title = validated_data.get('title', instance.title)
-        instance.content = validated_data.get('content', instance.content)
-        instance.save()
-        return instance
 
 
 class BlogSerializer(serializers.ModelSerializer):
@@ -31,7 +25,7 @@ class BlogSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Blog
-        fields = "__all__"
+        fields = '__all__'
 
     def get_reports(self, obj):
         return obj.reports.count()

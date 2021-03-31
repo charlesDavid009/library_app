@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'rest_framework.authtoken',
     'taggit',
+    'markdown_deux',
     
     # Installed APPs
     'accounts',

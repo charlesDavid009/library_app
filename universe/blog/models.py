@@ -1,3 +1,4 @@
+from __future__ import unicode_literals
 from django.db import models
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import User
@@ -6,8 +7,10 @@ from django.db.models import Q
 from django.utils import timezone
 from taggit.managers import TaggableManager
 from .managers import BlogManager, DraftManager, PublishManager
-from django.template.defaultfilters import slugify
-
+from django.utils.text import slugify
+from django.db.models.signals import pre_save
+from markdown_deux import markdown
+from .utils import get_read_time
 USER = get_user_model()
 
 # Create your models here.
@@ -23,7 +26,7 @@ class Blog(models.Model):
     API FOR USER TO CREATE THEIR OWN BLOG POST
     """
     parent = models.ForeignKey('self', null=True, blank=True, on_delete=models.SET_NULL)
-    slug = models.SlugField(blank = True, null=  True, unique = True)
+    slug = models.SlugField(unique = True)
     title = models.CharField(max_length=200, blank=False, null=True)
     content = models.CharField(max_length=8000, blank=False, null=True)
     picture = models.ImageField(blank=True, null=True)
@@ -31,7 +34,7 @@ class Blog(models.Model):
     comments = models.ManyToManyField(User, related_name='Blog_comments', blank=True, through='Comment')
     likes = models.ManyToManyField(User, related_name='Blog_likes', blank=True, through='BlogLikes')
     reports = models.ManyToManyField(User, related_name='Blog_reports', blank=True, through='Report')
-    #published = models.DateTimeField(default = timezone.now())
+    read_time = models.TimeField(null= True, blank= True)
     status = models.CharField(max_length = 100, choices = status, default = 'draft')
     tags = TaggableManager()
     created = models.DateTimeField(auto_now_add=True)
@@ -44,7 +47,12 @@ class Blog(models.Model):
         ordering = ['-id']
 
     def get_absolute_url(self):
-        return reverse("model_detail", kwargs={"pk": self.pk})
+        return reverse("blog:-:detail", kwargs={"pk": self.id})
+
+    def get_markdown(self):
+        content = self.content
+        markdown_text = markdown(content)
+        return mark_safe(mardown_text)
 
     @property
     def is_reblog(self):
@@ -54,7 +62,28 @@ class Blog(models.Model):
     def owner(self):
         return self.user.username
 
+def create_slug(instance, new_slug=None):
+    slug = slugify(instance.title)
+    if new_slug is not None:
+        slug= new_slug
+    qs = Blog.objects.filter(slug=slug)
+    exists = qs.exists()
+    if exists:
+        new_slug = "%-%" %(slug, qs.first().id)
+        return create_slug(instance, new_slug= new_slug)
+    return slug
 
+def pre_save_blog_reciever(sender, instance, *args, **kwargs):
+    if not instance.slug:
+        instance.slug = create_slug(instance)
+
+    if instance.content:
+        html_string = instance.get_markdown()
+        read_time_var = get_read_time(html_string)
+        instance.read_time = read_time_var
+
+
+pre_save.connect(pre_save_blog_reciever, sender = Blog)
 class Report(models.Model):
     """
     GETS THE TIME LIKES HAPPENED 

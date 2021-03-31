@@ -32,10 +32,10 @@ class BlogQuerySet(models.QuerySet):
 
 class BlogManager(models.Manager):
     def get_queryset(self, *args, **kwargs):
-        return BlogQuerySet(self.model, using=self._db)
-
+        return super().get_queryset().filter(status='publish')
+        
     def feed(self, user):
-        return self.get_queryset().feed(user).filter(status = 'publish')
+        return self.get_queryset().feed(user)
 
     def search(self, user, query= None):
         qs  = self.get_queryset().search(query=query)
