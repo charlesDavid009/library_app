@@ -25,10 +25,12 @@ SECRET_KEY = '=5pd&&4_^g*prtx*-&vpld2=0*$n$(d8$qn4wa1i_*q0n)st02'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
+
 ACTIONS = ['like', 'unlike', 'reblog', 'follow', 'unfollow', 'add', 'invite', 'comment', 'join', 'exit', 'confirm', 'reject','report', 'remove', 'pass']
 
 ALLOWED_HOSTS = []
 
+AUTH_USER_MODEL = 'accounts.MyUser'
 
 # Application definition
 
@@ -53,6 +55,7 @@ INSTALLED_APPS = [
     'pages',
     'DMs',
     'profiles',
+    'search',
     
 ]
 

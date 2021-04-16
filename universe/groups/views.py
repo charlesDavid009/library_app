@@ -435,36 +435,6 @@ class BlogActionView(generics.CreateAPIView):
     API FOR ACTIONS LIKE, UNLIKE , REBLOG, REPORT ON BLOGS
     """
     queryset = MyBlog.objects.all()
-    serializer_class = ActionReportSerializer
-    permission_classes = [IsAuthenticated]
-
-    def create(self, request, *args, **kwargs): #- Returns a serializer instance.
-        serializer = ActionReportSerializer(data = self.request.data)
-        if serializer.is_valid():
-            data = serializer.validated_data
-            blog_id = data.get('id_')
-            action = data.get('action')
-            group = data.get('group_id')
-            vs = Group.objects.filter(id = group)
-            if not vs.exists():
-                return Response({}, status = status.HTTP_404_NOT_FOUND)
-            vd = vs.first()
-            queryset = self.get_queryset()
-            qs = queryset.filter(id = blog_id)
-            if not qs.exists():
-                return Response({}, status=status.HTTP_404_NOT_FOUND)
-            obj = qs.first()
-            if action == "report":
-                obj.likes.add(self.request.user)
-                serializer = BlogSerializer(obj)
-                #print(serializer.data)
-                return Response(serializer.data)
-
-class BlogActionView(generics.CreateAPIView):
-    """
-    API FOR ACTIONS LIKE, UNLIKE , REBLOG, REPORT ON BLOGS
-    """
-    queryset = MyBlog.objects.all()
     serializer_class = ActionBlogSerializer
     permission_classes = [IsAuthenticated]
 
@@ -474,7 +444,7 @@ class BlogActionView(generics.CreateAPIView):
             data = serializer.validated_data
             blog_id = data.get('id_')
             action = data.get('action')
-            til = data.get('title')
+            title = data.get('title')
             add = data.get('add')
             group = data.get('group_id')
             vs = Group.objects.filter(id = group)
@@ -498,18 +468,21 @@ class BlogActionView(generics.CreateAPIView):
             elif action == "report":
                 obj.report.add(request.user)
                 vs = obj.reference_id
-                qs = Reports.objects.filter(id=obj.id)
-                qs = qs.first()
-                qs = qs.save(group= vs)
-                serializer = BlogSerializer(obj)
+                report = Reports.objects.create(
+                    group = vs,
+                    blog = obj,
+                    reasons = add,
+                )
+                serializer = ReportSerializer(report)
                 return Response(serializer.data)
+
             elif action == "reblog":
                 vs = obj.reference_id
                 new_blog = MyBlog.objects.create(
                     owner=request.user,
                     parent=obj,
                     reference_id=vs,
-                    title=til,
+                    title = title,
                     content=add
                 )
                 serializer = BlogSerializer(new_blog)
@@ -522,7 +495,7 @@ class BlogReportActionView(generics.CreateAPIView):
     """
     queryset = MyBlog.objects.all()
     serializer_class = ActionBlogSerializer
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated, MyAdmin]
 
     def create(self, request, *args, **kwargs): #- Returns a serializer instance.
         serializer = ActionBlogSerializer(data = self.request.data)

@@ -1,5 +1,5 @@
 from rest_framework import serializers
 
 
-class SearchSerailizer(serializers.Serializer):
-    query = serializers.Charfield()
+class SearchSerializer(serializers.Serializer):
+    query = serializers.CharField()

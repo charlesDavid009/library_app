@@ -1,7 +1,7 @@
 from rest_framework import serializers
 from .models import Profile, Follow, profiles_followed
 from django.conf import settings
-
+from blog.models import Blog
 
 ACTIONS = settings.ACTIONS
 
@@ -9,6 +9,7 @@ ACTIONS = settings.ACTIONS
 class ProfileSerializer(serializers.ModelSerializer):
     followers = serializers.SerializerMethodField(read_only=True)
     following = serializers.SerializerMethodField(read_only=True)
+    blogs = serializers.SerializerMethodField(read_only=True)
 
     class Meta:
         model = Profile
@@ -19,6 +20,12 @@ class ProfileSerializer(serializers.ModelSerializer):
     
     def get_following(self, obj):
         return obj.following.count()
+
+    def get_blogs(self, obj):
+        user = obj.user
+        qs= Blog.objects.filter(user = user)
+        blog_lists = qs.count()
+        return blog_lists
 
 
 class CreateProfileSerializer(serializers.Serializer):

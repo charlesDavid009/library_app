@@ -87,6 +87,7 @@ class BlogDraftListView(generics.ListAPIView):
         obj = qs.filter(user= user)
         return obj
 
+
 class BlogPostListView(generics.ListAPIView):
     """
     Get All Blogs And Search for Blog Titles Or Contents

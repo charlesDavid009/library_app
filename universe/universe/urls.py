@@ -24,5 +24,5 @@ urlpatterns = [
     path('', include('groups.urls')),
     path('', include('profiles.urls')),
     path('', include('pages.urls')),
-
+    path('', include('search.urls')),
 ]

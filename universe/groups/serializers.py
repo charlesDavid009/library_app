@@ -32,10 +32,10 @@ class GroupSerializer(serializers.ModelSerializer):
     def get_users(self, obj):
         return obj.users.count()
 
-class CreateGroupSerializer(serializers.Serializer):
-    group_name = serializers.CharField(max_length=100)
-    description = serializers.CharField(required=False)
-    picture = serializers.ImageField(required=False)
+class CreateGroupSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Group
+        fields = ['group_name', 'description', 'picture']
 
     def create(self, validated_data):
         return Group.objects.create(**validated_data)
@@ -51,21 +51,12 @@ class CreateGroupSerializer(serializers.Serializer):
 
 
 class CreateBlogSerializer(serializers.Serializer):
-    reference_id = serializers.IntegerField()
-    title = serializers.CharField(max_length=200)
-    content = serializers.CharField()
-    picture = serializers.ImageField(required=False)
+    class Meta:
+        model = MyBlog
+        fields = ['reference_id', 'title', 'content', 'picture']
 
     def create(self, validated_data):
         return MyBlog.objects.create(**validated_data)
-
-    def update(self, instance, validated_data):
-        instance.title = validated_data.get('title', instance.title)
-        instance.picture = validated_data.get('picture', instance.picture)
-        instance.content = validated_data.get('content', instance.content)
-        instance.save()
-        return instance
-
 
 class BlogSerializer(serializers.ModelSerializer):
     likes = serializers.SerializerMethodField(read_only=True)
@@ -121,7 +112,7 @@ class CreateMessageSerializer(serializers.Serializer):
 class ActionBlogSerializer(serializers.Serializer):
     id_ = serializers.IntegerField()
     action = serializers.CharField()
-    title = serializers.CharField(required=False)
+    title = serializers.CharField()
     add = serializers.CharField(required=False)
     group_id = serializers.IntegerField(required = False)
 
@@ -211,7 +202,10 @@ class ReportSerializer(serializers.ModelSerializer):
     def get_comment(self, obj):
         return obj.comment.count()
 
-
+class CreateReportSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Reports
+        fields = ["reasons"]
 
 class ReportListSerializer(serializers.ModelSerializer):
 
