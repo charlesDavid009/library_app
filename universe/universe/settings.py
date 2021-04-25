@@ -41,12 +41,16 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+
     # 3RD PARTY APPS
+    'corsheaders',
+    'rest_framework_swagger',
     'rest_framework',
     'rest_framework.authtoken',
     'taggit',
     'markdown_deux',
-    
+    'rest_framework_simplejwt',
+
     # Installed APPs
     'accounts',
     'blog',
@@ -56,10 +60,11 @@ INSTALLED_APPS = [
     'DMs',
     'profiles',
     'search',
-    
+
 ]
 
 MIDDLEWARE = [
+    "corsheaders.middleware.CorsMiddleware", 
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -70,6 +75,8 @@ MIDDLEWARE = [
 ]
 
 ROOT_URLCONF = 'universe.urls'
+
+#CORS_ORIGIN_ALLOW_ALL = True  
 
 TEMPLATES = [
     {
@@ -141,4 +148,20 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 
-#
+#SIMPLE_JWT = {
+#    'USER_ID_FIELD': 'MyUser.id'
+#}
+
+REST_FRAMEWORK = {
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.AllowAny',
+    ],
+    #"DEFAULT_PARSER_CLASSES": [
+        #"rest_framework.parsers.JSONParser",
+    #],
+    "DEFAULT_AUTHENTICATION_CLASSES": [                               # new
+        "rest_framework.authentication.SessionAuthentication",        # new
+        #"rest_framework_simplejwt.authentication.JWTAuthentication",
+        "rest_framework_simplejwt.authentication.JWTTokenUserAuthentication",  # new
+    ],
+}

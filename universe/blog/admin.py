@@ -50,7 +50,7 @@ class BlogLikesAdmin(admin.TabularInline):
 
 class BlogAdmin(admin.ModelAdmin):
     inlines = [BlogLikesAdmin]
-    list_display = ['title', 'created', 'user',  'owner']
+    list_display = ['title', 'created', 'user']
 
     search_feild = ['title']
 

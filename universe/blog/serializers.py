@@ -1,6 +1,7 @@
 from rest_framework import serializers
 from .models import Blog, Comment, SubComment, BlogLikes, CommentLikes, SubCommentLikes
 from django.conf import settings
+from accounts.serializer import UserInfoSerializer
 
 ACTIONS = settings.ACTIONS
 
@@ -27,6 +28,7 @@ class BlogSerializer(serializers.ModelSerializer):
     reports = serializers.SerializerMethodField(read_only=True)
     likes = serializers.SerializerMethodField(read_only=True)
     comments = serializers.SerializerMethodField(read_only=True)
+    user = UserInfoSerializer(read_only =True)
     parent = CreateBlogSerializer(read_only=True)
 
     class Meta:
@@ -52,6 +54,7 @@ class BlogDetailViewSerializer(serializers.ModelSerializer):
     reports = serializers.SerializerMethodField(read_only=True)
     likes = serializers.SerializerMethodField(read_only=True)
     comments = serializers.SerializerMethodField(read_only=True)
+    user = UserInfoSerializer(read_only =True)
     parent = CreateBlogSerializer(read_only=True)
 
     class Meta:
@@ -77,7 +80,7 @@ class BlogDetailViewSerializer(serializers.ModelSerializer):
         blog_id = obj.id
 
 class BlogLikesSerializer(serializers.ModelSerializer):
-
+    user = UserInfoSerializer(read_only =True)
     class Meta:
         model = BlogLikes
         fields = '__all__'
@@ -102,6 +105,7 @@ class CreateCommentSerializer(serializers.Serializer):
 class CommentSerializer(serializers.ModelSerializer):
     like = serializers.SerializerMethodField(read_only=True)
     comment = serializers.SerializerMethodField(read_only=True)
+    user = UserInfoSerializer(read_only =True)
 
     class Meta:
         model = Comment
@@ -115,7 +119,7 @@ class CommentSerializer(serializers.ModelSerializer):
 
 
 class CommentLikesSerializer(serializers.ModelSerializer):
-
+    user = UserInfoSerializer(read_only =True)
     class Meta:
         model = CommentLikes
         fields = '__all__'
@@ -139,6 +143,7 @@ class CreateSubCommentSerializer(serializers.Serializer):
 
 class SubCommentSerializer(serializers.ModelSerializer):
     like = serializers.SerializerMethodField(read_only=True)
+    user = UserInfoSerializer(read_only =True)
 
     class Meta:
         model = SubComment
@@ -149,7 +154,7 @@ class SubCommentSerializer(serializers.ModelSerializer):
 
 
 class SubCommentLikesSerializer(serializers.ModelSerializer):
-
+    user = UserInfoSerializer(read_only =True)
     class Meta:
         model = SubCommentLikes
         fields = '__all__'

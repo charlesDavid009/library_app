@@ -59,7 +59,7 @@ class Blog(models.Model):
 
     @property
     def owner(self):
-        return self.user.username
+        return self.user
 
 def create_slug(instance, new_slug=None):
     slug = slugify(instance.title)

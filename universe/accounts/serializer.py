@@ -34,13 +34,14 @@ class RegisterUserSerializer(serializers.ModelSerializer):
                         date_of_birth = date_of_birth
                         )
         user_obj.set_password(password)
+        print(user_obj)
         user_obj.save()
-        return validated_data
+        return user_obj
 
 class LoginSerializer(serializers.ModelSerializer):
     token = serializers.CharField(allow_blank= True, read_only= True)
     class Meta:
-        model= User
+        model= MyUser
         fields = ['username', 'password', 'token']
         extra_kwargs = {"password": {"write_only": True}}
 
@@ -49,14 +50,23 @@ class LoginSerializer(serializers.ModelSerializer):
         tag = ("@")
         password = data['password']
         username= tag + data['username']
-        user = User.objects.filter(username= username)
+        user = MyUser.objects.filter(username= username)
         if user.exists():
             user_obj = user.first()
-            print(user_obj)
+            print(user_obj.id)
         else:
             raise ValidationError("Invalid Credentials Username")
         if user_obj:
             if not user_obj.check_password(password):
                 raise ValidationError('Invalid password')
-        data['token']= 'SOME RANDOM TOKEN'
-        return data
+        return user_obj
+
+class UserInfoSerializer(serializers.ModelSerializer):
+    full_name = serializers.SerializerMethodField(read_only=True)
+    class Meta:
+        model = User
+        fields = ['username', 'full_name']
+
+    def get_full_name(self, obj):
+        full_name= obj.first_name + " " + obj.last_name
+        return full_name
