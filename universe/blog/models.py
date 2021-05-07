@@ -136,7 +136,7 @@ class CommentLikes(models.Model):
     """
     GETS THE TIME LIKES HAPPENED 
     """
-    blog = models.ForeignKey(Comment, on_delete=models.CASCADE)
+    Comment = models.ForeignKey(Comment, on_delete=models.CASCADE)
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     created = models.DateTimeField(auto_now_add=True)
 
@@ -149,7 +149,7 @@ class SubComment(models.Model):
     """
     MODELS FOR SUB_COMMENTS
     """
-    blog = models.ForeignKey(Comment, on_delete=models.CASCADE)
+    comment = models.ForeignKey(Comment, on_delete=models.CASCADE)
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     text = models.TextField()
     like = models.ManyToManyField(
@@ -171,7 +171,7 @@ class SubCommentLikes(models.Model):
     """
     GETS THE TIME LIKES HAPPENED 
     """
-    blog = models.ForeignKey(SubComment, on_delete=models.CASCADE)
+    subcomment = models.ForeignKey(SubComment, on_delete=models.CASCADE)
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     created = models.DateTimeField(auto_now_add=True)
 

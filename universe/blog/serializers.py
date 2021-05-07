@@ -34,6 +34,7 @@ class BlogSerializer(serializers.ModelSerializer):
     class Meta:
         model = Blog
         fields = '__all__'
+        exclude = ['comments', 'subcomments']
 
     def get_reports(self, obj):
         return obj.reports.count()
@@ -42,7 +43,8 @@ class BlogSerializer(serializers.ModelSerializer):
         return obj.likes.count()
 
     def get_comments(self, obj):
-        return obj.comments.count()
+        comment = obj.comments.count()
+        return comment
 
     def get_content(self, obj):
         content = obj.content
@@ -127,7 +129,7 @@ class CommentLikesSerializer(serializers.ModelSerializer):
 
 class CreateSubCommentSerializer(serializers.Serializer):
     id = serializers.IntegerField(read_only=True)
-    blog_id = serializers.IntegerField(required=True)
+    comment_id = serializers.IntegerField(required=True)
     text = serializers.CharField(required=True, max_length=9000)
     created = serializers.DateTimeField(read_only=True)
 
@@ -135,7 +137,7 @@ class CreateSubCommentSerializer(serializers.Serializer):
         return SubComment.objects.create(**validated_data)
 
     def update(self, instance, validated_data):
-        instance.blog_id = validated_data.get('blog_id', instance.blog_id)
+        instance.comment_id = validated_data.get('comment_id', instance.comment_id)
         instance.text = validated_data.get('text', instance.text)
         instance.save()
         return instance
@@ -164,6 +166,7 @@ class ActionBlogSerializer(serializers.Serializer):
     id = serializers.IntegerField()
     action = serializers.CharField()
     add = serializers.CharField(required=False, allow_blank=True)
+    status = serializers.CharField(default= 'publish', required = False)
 
     def validate_action(self, value):
         value = value.lower().strip()

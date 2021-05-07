@@ -12,6 +12,9 @@ https://docs.djangoproject.com/en/3.1/ref/settings/
 
 from pathlib import Path
 import os
+import environ
+env = environ.Env()
+environ.Env.read_env()
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve(strict=True).parent.parent
@@ -21,16 +24,16 @@ BASE_DIR = Path(__file__).resolve(strict=True).parent.parent
 # See https://docs.djangoproject.com/en/3.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = '=5pd&&4_^g*prtx*-&vpld2=0*$n$(d8$qn4wa1i_*q0n)st02'
+SECRET_KEY = env('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = env('DEBUG')
 
 ACTIONS = ['like', 'unlike', 'reblog', 'follow', 'unfollow', 'add', 'invite', 'comment', 'join', 'exit', 'confirm', 'reject','report', 'remove', 'pass']
 
 ALLOWED_HOSTS = []
 
-AUTH_USER_MODEL = 'accounts.MyUser'
+AUTH_USER_MODEL = env('AUTH_USER_MODEL')
 
 # Application definition
 
@@ -50,6 +53,8 @@ INSTALLED_APPS = [
     'taggit',
     'markdown_deux',
     'rest_framework_simplejwt',
+    'gunicorn',
+    #'whitenoise',
 
     # Installed APPs
     'accounts',
@@ -72,6 +77,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    #'whitenoise.middleware.WhiteNioseMiddleware'
 ]
 
 ROOT_URLCONF = 'universe.urls'
@@ -100,13 +106,25 @@ WSGI_APPLICATION = 'universe.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/3.1/ref/settings/#databases
 
+"""
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
+"""
 
+DATABASES = {
+    'default': {
+        'ENGINE': env('ENGINE'),
+        'NAME': env('NAME'),
+        'USER': env('USER'),
+        'PASSWORD': env('PASSWORD1'),
+        'HOST': env('HOST'),
+        'PORT': env('PORT'),
+    }
+}
 
 # Password validation
 # https://docs.djangoproject.com/en/3.1/ref/settings/#auth-password-validators
@@ -148,9 +166,6 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 
-#SIMPLE_JWT = {
-#    'USER_ID_FIELD': 'MyUser.id'
-#}
 
 REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': [
@@ -161,7 +176,7 @@ REST_FRAMEWORK = {
     #],
     "DEFAULT_AUTHENTICATION_CLASSES": [                               # new
         "rest_framework.authentication.SessionAuthentication",        # new
-        #"rest_framework_simplejwt.authentication.JWTAuthentication",
+        "rest_framework_simplejwt.authentication.JWTAuthentication",
         "rest_framework_simplejwt.authentication.JWTTokenUserAuthentication",  # new
     ],
 }
