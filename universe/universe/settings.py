@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/3.1/ref/settings/
 
 from pathlib import Path
 import os
+import datetime
 import environ
 env = environ.Env()
 environ.Env.read_env()
@@ -53,6 +54,8 @@ INSTALLED_APPS = [
     'taggit',
     'markdown_deux',
     'rest_framework_simplejwt',
+    'rest_framework_simplejwt.token_blacklist',
+    'drf_yasg',
     'gunicorn',
     #'whitenoise',
 
@@ -166,6 +169,10 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 
+SIMPLE_JWT = {
+    'ACCESS_TOKEN_LIFETIME': datetime.timedelta(minutes=1),
+    'REFRESH_TOKEN_LIFETIME': datetime.timedelta(days=1),
+}
 
 REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': [
@@ -175,8 +182,14 @@ REST_FRAMEWORK = {
         #"rest_framework.parsers.JSONParser",
     #],
     "DEFAULT_AUTHENTICATION_CLASSES": [                               # new
-        "rest_framework.authentication.SessionAuthentication",        # new
-        "rest_framework_simplejwt.authentication.JWTAuthentication",
+        #"rest_framework.authentication.SessionAuthentication",        # new
+        #"rest_framework_simplejwt.authentication.JWTAuthentication",
         "rest_framework_simplejwt.authentication.JWTTokenUserAuthentication",  # new
     ],
 }
+
+EMAIL_USE_TLS = True
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER')
+EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD')

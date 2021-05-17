@@ -43,6 +43,7 @@ class MyUserManager(BaseUserManager):
             date_of_birth=date_of_birth,
         )
         user.is_admin = True
+        user.is_verified = True
         user.save(using=self._db)
         return user
 
@@ -59,6 +60,7 @@ class MyUser(AbstractBaseUser):
     date_of_birth = models.DateField()
     is_active = models.BooleanField(default=True)
     is_admin = models.BooleanField(default=False)
+    is_verified = models.BooleanField(defualt=False)
 
     objects = MyUserManager()
 
