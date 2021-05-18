@@ -119,11 +119,11 @@ DATABASES = {
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME':'bloghub',
-        'USER': 'postgres',
-        'PASSWORD':'My12asked123',
+        'NAME':'bywah',
+        'USER': 'yeah',
+        'PASSWORD':'',
         'HOST':'localhost',
-        'PORT': '5432',
+        'PORT': 'vime',
     }
 }
 
