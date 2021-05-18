@@ -4,9 +4,9 @@ from django.contrib.auth.models import User
 from django.conf import settings
 from django.db.models import Q
 from django.contrib.auth.models import (
-    BaseUserManager, AbstractBaseUser
+    BaseUserManager, AbstractBaseUser, PermissionsMixin
 )
-
+from rest_framework_simplejwt.tokens import RefreshToken
 
 class MyUserManager(BaseUserManager):
     def create_user(self, email, username, last_name, first_name, date_of_birth, password=None):
@@ -44,11 +44,12 @@ class MyUserManager(BaseUserManager):
         )
         user.is_admin = True
         user.is_verified = True
+        user.is_superuser = True
         user.save(using=self._db)
         return user
 
 
-class MyUser(AbstractBaseUser):
+class MyUser(AbstractBaseUser, PermissionsMixin):
     username = models.CharField(unique= True, max_length= 70)
     email = models.EmailField(
         verbose_name='email address',
@@ -60,7 +61,7 @@ class MyUser(AbstractBaseUser):
     date_of_birth = models.DateField()
     is_active = models.BooleanField(default=True)
     is_admin = models.BooleanField(default=False)
-    is_verified = models.BooleanField(defualt=False)
+    is_verified = models.BooleanField(default=False)
 
     objects = MyUserManager()
 
@@ -80,17 +81,18 @@ class MyUser(AbstractBaseUser):
         # Simplest possible answer: Yes, always
         return True
 
-    def get_all_permissions(self, obj=None):
-        return True
-
-    def get_user_permissions(self, obj=None):
-        return True
-
-    def get_group_permissions(self, obj=None):
-        return True
-
     @property
     def is_staff(self):
         "Is the user a member of staff?"
         # Simplest possible answer: All admins are staff
         return self.is_admin
+
+    def __str__(self):
+        return self.email
+
+    def tokens(self):
+        refresh = RefreshToken.for_user(self)
+        return {
+            'refresh': str(refresh),
+            'access': str(refresh.access_token)
+        }

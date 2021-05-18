@@ -4,7 +4,6 @@ from django.shortcuts import redirect
 from django.utils.http import urlsafe_base64_decode, urlsafe_base64_encode
 from django.utils.encoding import smart_str, force_str, smart_bytes, DjangoUnicodeDecodeError
 from django.contrib.auth.tokens import PasswordResetTokenGenerator
-from .renderers import UserRenderer
 from drf_yasg import openapi
 from drf_yasg.utils import swagger_auto_schema
 import jwt
@@ -37,6 +36,32 @@ User = get_user_model()
 ACTIONS = settings.ACTIONS
 
 
+class RegisterUserPostView(generics.CreateAPIView):
+    serializer_class        = RegisterUserSerializer
+    queryset                = User.objects.all()
+
+    def create(self, request, *args, **kwargs):
+        user = request.data
+        user_email = request.data['email']
+        serializer = RegisterUserSerializer(data= user)
+        if serializer.is_valid(raise_exception=True):
+            user = serializer.save()
+            user_data = serializer.data
+            users = MyUser.objects.get(email=user_email)
+            print(users.email)
+            token = RefreshToken.for_user(users).access_token
+            current_site = get_current_site(request).domain
+            relativeLink = reverse('email-verify')
+            absurl = 'http://'+current_site+relativeLink+"?token="+str(token)
+            email_body = 'Hi '+user.username + \
+                ' Use the link below to verify your email \n' + absurl
+            data = {'email_body': email_body, 'to_email': users.email,
+                    'email_subject': 'Verify your email'}
+
+            Util.send_email(data)
+            return Response(user_data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status= status.HTTP_403_BAD_REQUEST)
+"""
 class RegisterUserPostView(generics.GenericAPIView):
 
     serializer_class = RegisterUserSerializer
@@ -48,7 +73,7 @@ class RegisterUserPostView(generics.GenericAPIView):
         serializer.is_valid(raise_exception=True)
         serializer.save()
         user_data = serializer.data
-        user = User.objects.get(email=user_data['email'])
+        user = User.objects.get(email=user['email'])
         token = RefreshToken.for_user(user).access_token
         current_site = get_current_site(request).domain
         relativeLink = reverse('email-verify')
@@ -60,7 +85,7 @@ class RegisterUserPostView(generics.GenericAPIView):
 
         Util.send_email(data)
         return Response(user_data, status=status.HTTP_201_CREATED)
-
+"""
 class LoginView(APIView):
     serializer_class = LoginSerializer
 

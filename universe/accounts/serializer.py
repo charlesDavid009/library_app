@@ -12,8 +12,8 @@ from django.core.exceptions import ValidationError
 User = get_user_model()
 
 class RegisterUserSerializer(serializers.ModelSerializer):
-    password1 = serializers.CharField(label = "password")
-    password2 = serializers.CharField(label = "confirm password")
+    password1 = serializers.CharField(label = "password", write_only = True)
+    password2 = serializers.CharField(label = "confirm password", write_only = True)
     class Meta:
         model = MyUser
         fields = ["first_name", "last_name", "email", "username", "date_of_birth", "password1", "password2"]
@@ -40,21 +40,10 @@ class RegisterUserSerializer(serializers.ModelSerializer):
                         date_of_birth = date_of_birth
                         )
         user_obj.set_password(password)
-        print(user_obj)
-        user_obj.save()
         return user_obj
 
 class LoginSerializer(serializers.ModelSerializer):
-    token = serializers.SerializerMethodField()
-
-    def get_token(self, obj):
-        username = '@'+ obj['username']
-        user = MyUser.objects.get(username=username)
-
-        return {
-            'refresh': user.tokens()['refresh'],
-            'access': user.tokens()['access']
-        }
+    token = serializers.CharField(read_only = True)
     class Meta:
         model= MyUser
         fields = ['username', 'password', 'token']
@@ -81,7 +70,7 @@ class LoginSerializer(serializers.ModelSerializer):
         return {
             'email': user_obj.email,
             'username': user_obj.username,
-            'tokens': user_obj.token
+            'tokens': user_obj.tokens
         }
 
 class UserInfoSerializer(serializers.ModelSerializer):
@@ -203,7 +192,7 @@ class LogoutSerializer(serializers.Serializer):
     def save(self, **kwargs):
 
         try:
-            RefreshToken(self.token).blacklist()
+            RefreshToken(self.token).delete()
 
         except TokenError:
             self.fail('bad_token')

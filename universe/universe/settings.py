@@ -13,9 +13,7 @@ https://docs.djangoproject.com/en/3.1/ref/settings/
 from pathlib import Path
 import os
 import datetime
-import environ
-env = environ.Env()
-environ.Env.read_env()
+
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve(strict=True).parent.parent
@@ -25,16 +23,16 @@ BASE_DIR = Path(__file__).resolve(strict=True).parent.parent
 # See https://docs.djangoproject.com/en/3.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = env('SECRET_KEY')
+SECRET_KEY ='=5pd&&4_^g*prtx*-&vpld2=0*$n$(d8$qn4wa1i_*q0n)st02'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = env('DEBUG')
+DEBUG = True
 
 ACTIONS = ['like', 'unlike', 'reblog', 'follow', 'unfollow', 'add', 'invite', 'comment', 'join', 'exit', 'confirm', 'reject','report', 'remove', 'pass']
 
 ALLOWED_HOSTS = []
 
-AUTH_USER_MODEL = env('AUTH_USER_MODEL')
+AUTH_USER_MODEL = 'accounts.MyUser'
 
 # Application definition
 
@@ -54,7 +52,7 @@ INSTALLED_APPS = [
     'taggit',
     'markdown_deux',
     'rest_framework_simplejwt',
-    'rest_framework_simplejwt.token_blacklist',
+    #'rest_framework_simplejwt.token_blacklist',
     'drf_yasg',
     'gunicorn',
     #'whitenoise',
@@ -72,7 +70,7 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
-    "corsheaders.middleware.CorsMiddleware", 
+    #"corsheaders.middleware.CorsMiddleware",
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -120,12 +118,12 @@ DATABASES = {
 
 DATABASES = {
     'default': {
-        'ENGINE': env('ENGINE'),
-        'NAME': env('NAME'),
-        'USER': env('USER'),
-        'PASSWORD': env('PASSWORD1'),
-        'HOST': env('HOST'),
-        'PORT': env('PORT'),
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME':'bloghub',
+        'USER': 'postgres',
+        'PASSWORD':'My12asked123',
+        'HOST':'localhost',
+        'PORT': '5432',
     }
 }
 
@@ -182,8 +180,8 @@ REST_FRAMEWORK = {
         #"rest_framework.parsers.JSONParser",
     #],
     "DEFAULT_AUTHENTICATION_CLASSES": [                               # new
-        #"rest_framework.authentication.SessionAuthentication",        # new
-        #"rest_framework_simplejwt.authentication.JWTAuthentication",
+        "rest_framework.authentication.SessionAuthentication",        # new
+        "rest_framework_simplejwt.authentication.JWTAuthentication",
         "rest_framework_simplejwt.authentication.JWTTokenUserAuthentication",  # new
     ],
 }
@@ -191,5 +189,5 @@ REST_FRAMEWORK = {
 EMAIL_USE_TLS = True
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
-EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER')
-EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD')
+EMAIL_HOST_USER = 'bloghub274@gmail.com'
+EMAIL_HOST_PASSWORD = ''
