@@ -13,7 +13,7 @@ from .serializers import(
     CreatePageSerializer,
     FollowingSerializer,
     LikingSerializer,
-    CreateBlogSerializer,
+    CreatePageBlogsSerializer,
     BlogSerializer,
     BlogLikedSerializer,
     CreateCommentSerializer,
@@ -129,7 +129,7 @@ class BlogPostRUDView(generics.RetrieveDestroyAPIView):
 
 class BlogCreatePostView(generics.CreateAPIView):
     lookup = 'pk'
-    serializer_class = CreateBlogSerializer
+    serializer_class = CreatePageBlogsSerializer
     permission_classes = [IsAuthenticated, IsOwner]
 
     def get_queryset(self):

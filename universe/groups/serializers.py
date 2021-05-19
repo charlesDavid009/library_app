@@ -52,6 +52,7 @@ class CreateGroupSerializer(serializers.ModelSerializer):
 
 class CreateBlogSerializer(serializers.Serializer):
     class Meta:
+        ref_name = "group 4"
         model = MyBlog
         fields = ['reference_id', 'title', 'content', 'picture']
 
@@ -64,6 +65,7 @@ class BlogSerializer(serializers.ModelSerializer):
     parent = CreateBlogSerializer(read_only=True)
 
     class Meta:
+        ref_name = "group 4"
         model = MyBlog
         exclude = ['report']
 
@@ -109,7 +111,7 @@ class CreateMessageSerializer(serializers.Serializer):
         return Message.objects.create(**validated_data)
 
 
-class ActionBlogSerializer(serializers.Serializer):
+class ActionGroupSerializer(serializers.Serializer):
     id_ = serializers.IntegerField()
     action = serializers.CharField()
     title = serializers.CharField()
@@ -122,6 +124,10 @@ class ActionBlogSerializer(serializers.Serializer):
             return value
         return serializers.ValidationError(status=400)
 
+
+class GroupActionBlogSerializer(ActionGroupSerializer):
+    class Meta:
+        ref_name = 'group 3'
 class ActionReportSerializer(serializers.Serializer):
     id_ = serializers.IntegerField()
     action = serializers.CharField()
@@ -137,6 +143,7 @@ class CommentSerializer(serializers.ModelSerializer):
     like = serializers.SerializerMethodField(read_only=True)
 
     class Meta:
+        ref_name = "group 4"
         model = MyComment
         fields = ["reference", "id", "comment", "likes", "created_at"]
 
@@ -145,8 +152,10 @@ class CommentSerializer(serializers.ModelSerializer):
 
 
 class CreateCommentSerializer(serializers.Serializer):
-    reference = serializers.IntegerField()
-    comment = serializers.CharField()
+    class Meta:
+        ref_name = "group 4"
+        model = MyComment
+        fields ="__all__"
 
     def create(self, validated_data):
         return MyComment.objects.create(**validated_data)

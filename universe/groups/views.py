@@ -11,7 +11,7 @@ from .serializers import (
     BlogSerializer,
     MessageSerializer,
     CreateMessageSerializer,
-    ActionBlogSerializer,
+    ActionGroupSerializer,
     ActionReportSerializer,
     CommentSerializer,
     CreateCommentSerializer,
@@ -121,7 +121,7 @@ class GroupUpdateView(generics.UpdateAPIView):
     permission_classes = [IsAuthenticated, IsOwnerOrReadOnly]
 
     def get_queryset(self):
-        group_id = self.kwargs.get('pk')
+        blog_id = self.kwargs.get('pk')
         qs = Group.objects.filter(id =blog_id)
         return qs
 
@@ -184,12 +184,12 @@ class GroupActionView(generics.CreateAPIView):
     Actions On Groups
     """
     queryset = Group.objects.all()
-    serializer_class = ActionBlogSerializer
+    serializer_class = ActionGroupSerializer
     permission_classes = [IsAuthenticated]
 
     # - Returns a serializer instance.
     def create(self, request, *args, **kwargs):
-        serializer = ActionBlogSerializer(data=request.data)
+        serializer = ActionGroupSerializer(data=request.data)
         if serializer.is_valid():
             data = serializer.validated_data
             blog_id = data.get("id_")
@@ -226,12 +226,12 @@ class GroupAdminActionView(generics.CreateAPIView):
     Actions By Group Admin
     """
     queryset = Group.objects.all()
-    serializer_class = ActionBlogSerializer
+    serializer_class = ActionGroupSerializer
     permission_classes = [IsAuthenticated, MyAdmin]
 
     # - Returns a serializer instance.
     def create(self, request, *args, **kwargs):
-        serializer = ActionBlogSerializer(data=request.data)
+        serializer = ActionGroupSerializer(data=request.data)
         if serializer.is_valid():
             data = serializer.validated_data
             group_id = data.get("id_")
@@ -272,12 +272,12 @@ class GroupOwnerActionView(generics.CreateAPIView):
     Actions By Group Admin
     """
     queryset = Group.objects.all()
-    serializer_class = ActionBlogSerializer
+    serializer_class = ActionGroupSerializer
     permission_classes = [IsAuthenticated, IsOwners]
 
     # - Returns a serializer instance.
     def create(self, request, *args, **kwargs):
-        serializer = ActionBlogSerializer(data=request.data)
+        serializer = ActionGroupSerializer(data=request.data)
         if serializer.is_valid():
             data = serializer.validated_data
             users_id = data.get("id_")
@@ -435,11 +435,11 @@ class BlogActionView(generics.CreateAPIView):
     API FOR ACTIONS LIKE, UNLIKE , REBLOG, REPORT ON BLOGS
     """
     queryset = MyBlog.objects.all()
-    serializer_class = ActionBlogSerializer
+    serializer_class = ActionGroupSerializer
     permission_classes = [IsAuthenticated]
 
     def create(self, request, *args, **kwargs): #- Returns a serializer instance.
-        serializer = ActionBlogSerializer(data = self.request.data)
+        serializer = ActionGroupSerializer(data=self.request.data)
         if serializer.is_valid():
             data = serializer.validated_data
             blog_id = data.get('id_')
@@ -494,11 +494,11 @@ class BlogReportActionView(generics.CreateAPIView):
     API FOR ACTIONS Pass,Remove ON BLOGS
     """
     queryset = MyBlog.objects.all()
-    serializer_class = ActionBlogSerializer
+    serializer_class = ActionGroupSerializer
     permission_classes = [IsAuthenticated, MyAdmin]
 
     def create(self, request, *args, **kwargs): #- Returns a serializer instance.
-        serializer = ActionBlogSerializer(data = self.request.data)
+        serializer = ActionGroupSerializer(data = self.request.data)
         if serializer.is_valid():
             data = serializer.validated_data
             blog_id = data.get("id_")
@@ -614,12 +614,12 @@ class CommentActionView(generics.CreateAPIView):
     Actions Like Or Unlike on Comment
     """
     queryset = Message.objects.all()
-    serializer_class = ActionBlogSerializer
+    serializer_class = ActionGroupSerializer
     permission_classes = [IsAuthenticated, IsUsers]
 
     # - Returns a serializer instance.
     def create(self, request, *args, **kwargs):
-        serializer = ActionBlogSerializer(data=self.request.data)
+        serializer = ActionGroupSerializer(data=self.request.data)
         if serializer.is_valid():
             data = serializer.validated_data
             blog_id = data.get("id")
@@ -706,12 +706,12 @@ class SubCommentActionView(generics.CreateAPIView):
     Actions Like Or Unlike On SubComment
     """
     queryset = MyComment.objects.all()
-    serializer_class = ActionBlogSerializer
+    serializer_class = ActionGroupSerializer
     permission_classes = [IsAuthenticated]
 
     # - Returns a serializer instance.
     def create(self, request, *args, **kwargs):
-        serializer = ActionBlogSerializer(data=self.request.data)
+        serializer = ActionGroupSerializer(data=self.request.data)
         if serializer.is_valid():
             data = serializer.validated_data
             blog_id = data.get("id")

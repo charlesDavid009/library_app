@@ -24,17 +24,19 @@ class CreateBlogSerializer(serializers.ModelSerializer):
         instance.save()
         return instance
 
+
+
 class BlogSerializer(serializers.ModelSerializer):
     reports = serializers.SerializerMethodField(read_only=True)
     likes = serializers.SerializerMethodField(read_only=True)
     comments = serializers.SerializerMethodField(read_only=True)
     user = UserInfoSerializer(read_only =True)
-    parent = CreateBlogSerializer(read_only=True)
 
     class Meta:
+        ref_name = "blog 1"
         model = Blog
         fields = '__all__'
-        exclude = ['comments', 'subcomments']
+
 
     def get_reports(self, obj):
         return obj.reports.count()
@@ -52,47 +54,20 @@ class BlogSerializer(serializers.ModelSerializer):
             content = obj.parent.content
             return content
 
-class BlogDetailViewSerializer(serializers.ModelSerializer):
-    reports = serializers.SerializerMethodField(read_only=True)
-    likes = serializers.SerializerMethodField(read_only=True)
-    comments = serializers.SerializerMethodField(read_only=True)
-    user = UserInfoSerializer(read_only =True)
-    parent = CreateBlogSerializer(read_only=True)
-
-    class Meta:
-        model = Blog
-        fields = '__all__'
-
-    def get_reports(self, obj):
-        return obj.reports.count()
-
-    def get_likes(self, obj):
-        return obj.likes.count()
-
-    def get_comments(self, obj):
-        return obj.comments.count()
-
-    def get_content(self, obj):
-        content = obj.content
-        if obj.is_reblog:
-            content = obj.parent.content
-            return content
-
-    def get_comment_threads(self, obj):
-        blog_id = obj.id
 
 class BlogLikesSerializer(serializers.ModelSerializer):
     user = UserInfoSerializer(read_only =True)
     class Meta:
+        ref_name = "blog 2"
         model = BlogLikes
         fields = '__all__'
 
 
-class CreateCommentSerializer(serializers.Serializer):
-    id = serializers.IntegerField(read_only=True)
-    blog_id = serializers.IntegerField(required=True)
-    text = serializers.CharField(required=True, max_length=9000)
-    created = serializers.DateTimeField(read_only=True)
+class CreateCommentSerializer(serializers.ModelSerializer):
+    class Meta:
+        ref_name = "blog 2"
+        model = Comment
+        fields = "__all__"
 
     def create(self, validated_data):
         return Comment.objects.create(**validated_data)
@@ -110,6 +85,7 @@ class CommentSerializer(serializers.ModelSerializer):
     user = UserInfoSerializer(read_only =True)
 
     class Meta:
+        ref_name = "blog 2"
         model = Comment
         fields = '__all__'
 
@@ -123,6 +99,7 @@ class CommentSerializer(serializers.ModelSerializer):
 class CommentLikesSerializer(serializers.ModelSerializer):
     user = UserInfoSerializer(read_only =True)
     class Meta:
+        ref_name = "blog 2"
         model = CommentLikes
         fields = '__all__'
 
@@ -173,3 +150,7 @@ class ActionBlogSerializer(serializers.Serializer):
         if not value in ACTIONS:
             raise serializers.ValidationError(status=400)
         return value
+
+class blogActionBlogSerializer(ActionBlogSerializer):
+    class Meta:
+        ref_name = 'blog 2'

@@ -116,16 +116,8 @@ DATABASES = {
 }
 """
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME':'bywah',
-        'USER': 'yeah',
-        'PASSWORD':'',
-        'HOST':'localhost',
-        'PORT': 'vime',
-    }
-}
+EMAIL_HOST_PASSWORD = 'My12asked123@'
+
 
 # Password validation
 # https://docs.djangoproject.com/en/3.1/ref/settings/#auth-password-validators
@@ -185,9 +177,3 @@ REST_FRAMEWORK = {
         "rest_framework_simplejwt.authentication.JWTTokenUserAuthentication",  # new
     ],
 }
-
-EMAIL_USE_TLS = True
-EMAIL_HOST = 'smtp.gmail.com'
-EMAIL_PORT = 587
-EMAIL_HOST_USER = 'test123@gmail.com'
-EMAIL_HOST_PASSWORD = ''

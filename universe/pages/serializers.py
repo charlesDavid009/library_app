@@ -54,12 +54,11 @@ class LikingSerializer(serializers.ModelSerializer):
         model = Liking
         fields = '__all__'
 
-class CreateBlogSerializer(serializers.Serializer):
-    reference_id = serializers.IntegerField(required = True)
-    title = serializers.CharField()
-    content = serializers.CharField()
-    picture = serializers.ImageField(required=False)
-    created = serializers.DateTimeField(read_only=True)
+class CreatePageBlogsSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Blogs
+        fields = ['reference', 'title', 'content', 'picture']
 
     def create(self, validated_data):
         return Blogs.objects.create(**validated_data)
@@ -70,13 +69,13 @@ class CreateBlogSerializer(serializers.Serializer):
         instance.save()
         return instance
 
-
 class BlogSerializer(serializers.ModelSerializer):
     likes = serializers.SerializerMethodField(read_only=True)
     comments = serializers.SerializerMethodField(read_only=True)
-    parent = CreateBlogSerializer(read_only=True)
+    #parent = CreateBlogSerializer(read_only=True)
 
     class Meta:
+        ref_name = "page 2"
         model = Blogs
         fields = "__all__"
 
@@ -96,15 +95,16 @@ class BlogSerializer(serializers.ModelSerializer):
 class BlogLikedSerializer(serializers.ModelSerializer):
 
     class Meta:
+        ref_name = "page 3"
         model = BlogLiked
         fields = '__all__'
 
 
-class CreateCommentSerializer(serializers.Serializer):
-    id = serializers.IntegerField(read_only=True)
-    blog_id = serializers.IntegerField(required=True)
-    text = serializers.CharField(required=True, max_length=9000)
-    created = serializers.DateTimeField(read_only=True)
+class CreateCommentSerializer(serializers.ModelSerializer):
+    class Meta:
+        ref_name = "page 3"
+        model = Comments
+        fields = '__all__'
 
     def create(self, validated_data):
         return Comments.objects.create(**validated_data)
@@ -120,6 +120,7 @@ class CommentSerializer(serializers.ModelSerializer):
     like = serializers.SerializerMethodField(read_only=True)
 
     class Meta:
+        ref_name = "page 3"
         model = Comments
         fields = '__all__'
 
@@ -129,6 +130,7 @@ class CommentSerializer(serializers.ModelSerializer):
 class CommentLikesSerializer(serializers.ModelSerializer):
 
     class Meta:
+        ref_name = "page 3"
         model = CommentLiked
         fields = '__all__'
 
