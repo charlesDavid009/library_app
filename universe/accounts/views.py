@@ -29,7 +29,7 @@ from rest_framework import generics
 from django.conf import settings
 from django.db.models import Q
 from django.contrib.auth import get_user_model
-
+from .renders import UserRenderer
 
 User = get_user_model()
 
@@ -38,6 +38,7 @@ ACTIONS = settings.ACTIONS
 
 class RegisterUserPostView(generics.CreateAPIView):
     serializer_class        = RegisterUserSerializer
+    renderer_classes        = (UserRenderer,)
     queryset                = User.objects.all()
 
     def create(self, request, *args, **kwargs):
