@@ -162,11 +162,11 @@ class BlogActionView(generics.CreateAPIView):
             blog_id = data.get('id')
             action = data.get('action')
             details = data.get('add')
-            statud = data.get('status')
+            stat = data.get('status')
             queryset = self.get_queryset()
             qs = queryset.filter(id = blog_id)
             if not qs.exists():
-                return Response({}, status=staus.HTTP_404_NOT_FOUND)
+                return Response({}, status=status.HTTP_404_NOT_FOUND)
             obj = qs.first()
             if action == "like":
                 obj.likes.add(self.request.user)
@@ -186,7 +186,7 @@ class BlogActionView(generics.CreateAPIView):
                     user=request.user,
                     parent=obj,
                     content=details,
-                    status= statud
+                    status= stat
                 )
                 serializer = BlogSerializer(new_blog)
                 return Response(serializer.data, status=status.HTTP_201_CREATED)

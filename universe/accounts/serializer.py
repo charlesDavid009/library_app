@@ -12,8 +12,8 @@ from django.core.exceptions import ValidationError
 User = get_user_model()
 
 class RegisterUserSerializer(serializers.ModelSerializer):
-    password1 = serializers.CharField(label = "password", write_only = True)
-    password2 = serializers.CharField(label = "confirm password", write_only = True)
+    password1 = serializers.CharField(min_length=8, max_length=68, label = "password", write_only = True)
+    password2 = serializers.CharField(min_length=8, max_length=68, label = "confirm password", write_only = True)
     class Meta:
         model = MyUser
         fields = ["first_name", "last_name", "email", "username", "date_of_birth", "password1", "password2"]
@@ -97,14 +97,14 @@ class EmailVerificationSerializer(serializers.ModelSerializer):
 class ResetPasswordEmailRequestSerializer(serializers.Serializer):
     email = serializers.EmailField(min_length=2)
 
-    redirect_url = serializers.CharField(max_length=500, required=False)
+    #redirect_url = serializers.CharField(max_length=500, required=False)
 
     class Meta:
         fields = ['email']
 
 
 class SetNewPasswordSerializer(serializers.Serializer):
-    password = serializers.CharField(min_length=6, max_length=68, write_only=True)
+    password = serializers.CharField(min_length=8, max_length=68, write_only=True)
     token = serializers.CharField( min_length=1, write_only=True)
     uidb64 = serializers.CharField(min_length=1, write_only=True)
 

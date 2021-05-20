@@ -116,7 +116,6 @@ DATABASES = {
 }
 """
 
-EMAIL_HOST_PASSWORD = 'My12asked123@'
 
 
 # Password validation
@@ -177,3 +176,4 @@ REST_FRAMEWORK = {
         "rest_framework_simplejwt.authentication.JWTTokenUserAuthentication",  # new
     ],
 }
+
