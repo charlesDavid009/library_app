@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Blog, Comment, SubComment, BlogLikes, CommentLikes, SubCommentLikes
+from .models import Blog, Comment, SubComment, BlogLikes, CommentLikes, SubCommentLikes, ReportDetail
 from django.conf import settings
 from accounts.serializer import UserInfoSerializer
 
@@ -62,7 +62,21 @@ class BlogLikesSerializer(serializers.ModelSerializer):
         model = BlogLikes
         fields = '__all__'
 
+class BlogCreateReportSerialiizer(serializers.ModelSerializer):
+    class Meta:
+        ref_name = "blog 3"
+        model = ReportDetail
+        fields = ["blog", "context"]
 
+    def create(self, validated_data):
+        return ReportDetail.objects.create(**validated_data)
+
+class BlogReportSerialiizer(serializers.ModelSerializer):
+    user = UserInfoSerializer(read_only =True)
+    class Meta:
+        ref_name = "blog 3"
+        model = ReportDetail
+        fields = "__all__"
 class CreateCommentSerializer(serializers.ModelSerializer):
     class Meta:
         ref_name = "blog 2"

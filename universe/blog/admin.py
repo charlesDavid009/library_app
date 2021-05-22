@@ -6,19 +6,27 @@ from .models import (
     Comment,
     CommentLikes,
     SubComment,
-    SubCommentLikes
+    SubCommentLikes,
+    ReportDetail
 )
 
 # Register your models here.
 
 
+class ReportDetailAdmin(admin.ModelAdmin):
+    list_display = ['blog', 'user',  'created']
+
+    search_feild = ['blog']
+
+    class Meta:
+        model = ReportDetail
 class SubCommentLikesAdmin(admin.TabularInline):
     model = SubCommentLikes
 
 
 class SubCommentAdmin(admin.ModelAdmin):
     inlines = [SubCommentLikesAdmin]
-    list_display = ['text', 'comment', 'user',  'user_info']
+    list_display = ['comment', 'user',  'user_info']
 
     search_feild = ['comment']
 
@@ -32,7 +40,7 @@ class CommentLikesAdmin(admin.TabularInline):
 
 class CommentAdmin(admin.ModelAdmin):
     inlines = [CommentLikesAdmin]
-    list_display = ['text', 'blog', 'user',  'user_info']
+    list_display = [ 'blog', 'user',  'user_info']
 
     search_feild = ['blog']
 

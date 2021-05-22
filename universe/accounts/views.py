@@ -22,7 +22,8 @@ LoginSerializer,
 SetNewPasswordSerializer,
 ResetPasswordEmailRequestSerializer,
 EmailVerificationSerializer,
-LogoutSerializer
+LogoutSerializer,
+ResetEmailVerificationSerializer
 )
 from .models import MyUser
 from rest_framework import generics
@@ -30,6 +31,7 @@ from django.conf import settings
 from django.db.models import Q
 from django.contrib.auth import get_user_model
 from .renders import UserRenderer
+from profiles.models import Profile
 
 User = get_user_model()
 
@@ -52,17 +54,56 @@ class RegisterUserPostView(generics.CreateAPIView):
             users = MyUser.objects.get(email=user_email)
             print(users.email)
             token = RefreshToken.for_user(users).access_token
+            request_token = RefreshToken.for_user(users)
+
             current_site = get_current_site(request).domain
             relativeLink = reverse('email-verify')
-            absurl = 'http://'+current_site+relativeLink+"?token="+str(token)
-            email_body = 'WELCOME TO BLOGHUB \n\n''Hi '+username + \
-                ' \n Use the link below to verify your email \n' + absurl
+            requestlink = reverse('request-email-verify')
+            absurl = 'http://'+current_site+relativeLink+"?token="+str(request_token)
+            absolute = 'http://'+current_site+requestlink
+
+            email_body = 'WELCOME TO BLOGHUB \n\n''Hello '+username+',' + \
+                ' \n\n Use the link below to verify your email and activate your account \n' + absurl+ \
+                ' \n Click on the link below to request for a new activation link \n' + absolute
             data = {'email_body': email_body, 'to_email': users.email,
                     'email_subject': 'Verify your email'}
 
             Util.send_email(data)
             return Response(user_data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status= status.HTTP_403_BAD_REQUEST)
+
+
+class NewVerifyTokenPostView(views.APIView):
+    serializer_class        = ResetEmailVerificationSerializer
+
+    def post(self, request, *args, **kwargs):
+
+        data = request.data
+        serializer = ResetEmailVerificationSerializer(data=data)
+        email = request.data.get('email', '')
+
+        if User.objects.filter(email=email).exists():
+            user = User.objects.get(email=email)
+            current_site = get_current_site(request).domain
+
+            token = RefreshToken.for_user(user)
+            current_site = get_current_site(request).domain
+            relativeLink = reverse('email-verify')
+            requestlink = reverse('request-email-verify')
+            absurl = 'http://'+current_site + \
+                relativeLink+"?token="+str(token)
+            absolute = 'http://'+current_site+requestlink
+
+            email_body = 'WELCOME TO BLOGHUB \n\n'"Hi, you requested for a new activation link," + \
+                "  please disregard this mail,"+  " if you didn't make this request" + \
+                '\n\n Use the link below to verify your email and activate your account \n' + absurl+ \
+                ' \n Click on the link below to request for a new activation link \n' + absolute
+            data = {'email_body': email_body, 'to_email': user.email,
+                    'email_subject': 'Verify your email'}
+
+            Util.send_email(data)
+            return Response({'success': 'A new link has beeen sent to your email'}, status=status.HTTP_200_OK)
+        return Response({'success': 'A new link has beeen sent to your email'}, status=status.HTTP_200_OK)
 
 class LoginView(APIView):
     serializer_class = LoginSerializer
@@ -93,6 +134,10 @@ class VerifyEmail(views.APIView):
             user = User.objects.get(id=payload['user_id'])
             if not user.is_verified:
                 user.is_verified = True
+                myuser = Profile.objects.get(user=user.id)
+                myuser.first_name = user.first_name
+                myuser.last_name = user.last_name
+                myuser.save()
                 user.save()
             return Response({'email': 'Successfully activated'}, status=status.HTTP_200_OK)
         except jwt.ExpiredSignatureError as identifier:
@@ -119,7 +164,7 @@ class RequestPasswordResetEmail(generics.GenericAPIView):
             relativeLink = reverse(
                 'password-reset-confirm', kwargs={'uidb64': uidb64, 'token': token})
 
-            redirect_url = request.data.get('redirect_url', '')
+            #redirect_url = request.data.get('redirect_url', '')
             absurl = 'http://'+current_site + relativeLink
             email_body = 'Hello, \n\n Use the link below to reset your password  \n' + \
                 absurl

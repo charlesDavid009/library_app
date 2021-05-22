@@ -12,7 +12,9 @@ from .serializers import(
     ActionBlogSerializer,
     BlogLikesSerializer,
     CommentLikesSerializer,
-    SubCommentLikesSerializer
+    SubCommentLikesSerializer,
+    BlogCreateReportSerialiizer,
+    BlogReportSerialiizer
 )
 from .models import (
     Blog,
@@ -20,7 +22,8 @@ from .models import (
     SubComment,
     BlogLikes,
     CommentLikes,
-    SubCommentLikes
+    SubCommentLikes,
+    ReportDetail
 )
 from rest_framework.views import APIView
 from rest_framework import mixins
@@ -30,7 +33,7 @@ from rest_framework.decorators import (
     authentication_classes,
     permission_classes
 )
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated, IsAdminUser
 from rest_framework import permissions
 from .permissions import IsOwnerOrReadOnly, IsOwner
 from django.conf import settings
@@ -135,6 +138,18 @@ class BlogFeedsView(generics.ListAPIView):
         qs = Blog.objects.feed(user)
         return qs
 
+
+class BlogCreateReportView(generics.CreateAPIView):
+    lookup                  = 'pk'
+    serializer_class        = BlogCreateReportSerialiizer
+    permission_classes      = [IsAuthenticated]
+
+    def get_queryset(self):
+        return ReportDetail.objects.all()
+
+    def perform_create(self, serializer):
+        users = self.request.user
+        serializer.save(user= users)
 
 class BlogLikeListView(generics.ListAPIView):
     """

@@ -13,7 +13,7 @@ https://docs.djangoproject.com/en/3.1/ref/settings/
 from pathlib import Path
 import os
 import datetime
-
+import django_heroku
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve(strict=True).parent.parent
@@ -30,7 +30,7 @@ DEBUG = True
 
 ACTIONS = ['like', 'unlike', 'reblog', 'follow', 'unfollow', 'add', 'invite', 'comment', 'join', 'exit', 'confirm', 'reject','report', 'remove', 'pass']
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['bloghub1.herokuapp.com', '127.0.0.1']
 
 AUTH_USER_MODEL = 'accounts.MyUser'
 
@@ -158,7 +158,7 @@ STATIC_URL = '/static/'
 
 SIMPLE_JWT = {
     'ACCESS_TOKEN_LIFETIME': datetime.timedelta(minutes=1),
-    'REFRESH_TOKEN_LIFETIME': datetime.timedelta(days=1),
+    'REFRESH_TOKEN_LIFETIME': datetime.timedelta(days=2),
 }
 
 REST_FRAMEWORK = {
@@ -175,3 +175,28 @@ REST_FRAMEWORK = {
     ],
 }
 
+django_heroku.settings(locals())
+
+
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+
+STATIC_URL = '/static/'
+
+STATICFILES_DIRS= [
+    os.path.join(BASE_DIR, 'static')
+]
+
+SWAGGER_SETTINGS = {
+    'SECURITY_DEFINITIONS': {
+        'Bearer': {
+            'type': 'apiKey',
+            'name': 'Authorization',
+            'in': 'header'
+        }
+    }
+}
+
+"""
+Coresapi implementation is still missing 
+
+"""

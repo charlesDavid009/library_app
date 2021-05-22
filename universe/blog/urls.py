@@ -11,6 +11,7 @@ urlpatterns = [
     path('Blog/', views.BlogPostListView.as_view()),
     path('Blog/Draft/', views.BlogDraftListView.as_view()),
     path('Blog/action', views.BlogActionView.as_view()),
+    path('Blog/report/create', views.BlogCreateReportView.as_view()),
 
     #Comment Urls
 

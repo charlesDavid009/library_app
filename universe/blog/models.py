@@ -59,7 +59,7 @@ class Blog(models.Model):
 
     @property
     def owner(self):
-        return self.user
+        return self.username
 
 def create_slug(instance, new_slug=None):
     slug = slugify(instance.title)
@@ -97,8 +97,20 @@ class Report(models.Model):
 
     @property
     def user_info(self):
-        return self.user
+        return self.username
 
+class ReportDetail(models.Model):
+    """
+    GETS THE TIME LIKES HAPPENED
+    """
+    blog = models.ForeignKey(Blog, on_delete=models.CASCADE)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    context = models.TextField()
+    created = models.DateTimeField(auto_now_add=True)
+
+    @property
+    def user_info(self):
+        return self.username
 
 class BlogLikes(models.Model):
     """

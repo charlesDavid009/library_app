@@ -149,13 +149,25 @@ class Reports(models.Model):
     users = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     blog = models.ForeignKey(MyBlog, on_delete=models.CASCADE)
     group = models.ForeignKey(Group, on_delete=models.CASCADE)
-    reasons = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)
 
     @property
     def user_info(self):
         return self.user
 
+
+class MyBlogReportDetail(models.Model):
+    """
+    GETS THE TIME LIKES HAPPENED
+    """
+    blog = models.ForeignKey(MyBlog, on_delete=models.CASCADE)
+    users = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    context = models.TextField()
+    created = models.DateTimeField(auto_now_add=True)
+
+    @property
+    def user_info(self):
+        return self.username
 
 class Message(models.Model):
     reference = models.ForeignKey(MyBlog, on_delete=models.CASCADE)

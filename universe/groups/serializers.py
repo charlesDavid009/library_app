@@ -11,9 +11,11 @@ from .models import(
     CommentsLikes,
     MessageLikes,
     Admins,
-    Reports
+    Reports,
+    MyBlogReportDetail
 )
 from django.conf import settings
+from accounts.serializer import UserInfoSerializer
 
 ACTIONS = settings.ACTIONS
 
@@ -21,7 +23,7 @@ ACTIONS = settings.ACTIONS
 class GroupSerializer(serializers.ModelSerializer):
     users = serializers.SerializerMethodField(read_only=True)
     follower = serializers.SerializerMethodField(read_only=True)
-
+    user = UserInfoSerializer(read_only =True)
     class Meta:
         model = Group
         exclude = [ 'request','admin']
@@ -62,7 +64,8 @@ class CreateBlogSerializer(serializers.Serializer):
 class BlogSerializer(serializers.ModelSerializer):
     likes = serializers.SerializerMethodField(read_only=True)
     comment = serializers.SerializerMethodField(read_only=True)
-    parent = CreateBlogSerializer(read_only=True)
+    user = UserInfoSerializer(read_only =True)
+    #parent = CreateBlogSerializer(read_only=True)
 
     class Meta:
         ref_name = "group 4"
@@ -91,10 +94,10 @@ class BlogSerializer(serializers.ModelSerializer):
 class MessageSerializer(serializers.ModelSerializer):
     like = serializers.SerializerMethodField(read_only=True)
     comments = serializers.SerializerMethodField(read_only=True)
-
+    user = UserInfoSerializer(read_only =True)
     class Meta:
         model = Message
-        fields = ["reference", "id", "comments", "like", "created_at"]
+        fields = ["reference", "id", "comments", "like", "created_at", 'user']
 
     def get_like(self, obj):
         return obj.like.count()
@@ -141,7 +144,7 @@ class ActionReportSerializer(serializers.Serializer):
 
 class CommentSerializer(serializers.ModelSerializer):
     like = serializers.SerializerMethodField(read_only=True)
-
+    user = UserInfoSerializer(read_only =True)
     class Meta:
         ref_name = "group 4"
         model = MyComment
@@ -162,14 +165,14 @@ class CreateCommentSerializer(serializers.Serializer):
 
 
 class RequestSerializer(serializers.ModelSerializer):
-
+    user = UserInfoSerializer(read_only =True)
     class Meta:
         model = Request
         fields = '__all__'
 
 
 class UsesSerializer(serializers.ModelSerializer):
-
+    user = UserInfoSerializer(read_only =True)
     class Meta:
         model = Uses
         fields = '__all__'
@@ -190,14 +193,14 @@ class AdminSerializer(serializers.ModelSerializer):
 
 
 class MyBlogLikesSerializer(serializers.ModelSerializer):
-
+    user = UserInfoSerializer(read_only =True)
     class Meta:
         model = MyBlogLikes
         fields = '__all__'
 
 
 class ReportSerializer(serializers.ModelSerializer):
-
+    user = UserInfoSerializer(read_only=True)
     class Meta:
         model = MyBlog
         fields = '__all__'
@@ -211,27 +214,39 @@ class ReportSerializer(serializers.ModelSerializer):
     def get_comment(self, obj):
         return obj.comment.count()
 
-class CreateReportSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Reports
-        fields = ["reasons"]
 
 class ReportListSerializer(serializers.ModelSerializer):
-
+    user = UserInfoSerializer(read_only =True)
     class Meta:
         model = Reports
         fields = '__all__'
 
 
 class MessageLikesSerializer(serializers.ModelSerializer):
-
+    user = UserInfoSerializer(read_only =True)
     class Meta:
         model = MessageLikes
         fields = '__all__'
 
 
 class CommentLikesSerializer(serializers.ModelSerializer):
-
+    user = UserInfoSerializer(read_only =True)
     class Meta:
         model = CommentsLikes
         fields = '__all__'
+
+class GropCreateReportSerialiizer(serializers.ModelSerializer):
+    class Meta:
+        ref_name = "group 5"
+        model = MyBlogReportDetail
+        fields = ["blog", "context"]
+
+    def create(self, validated_data):
+        return MyBlogReportDetail.objects.create(**validated_data)
+
+class GrouupReportSerialiizer(serializers.ModelSerializer):
+    user = UserInfoSerializer(read_only =True)
+    class Meta:
+        ref_name = "group 5"
+        model = MyBlogReportDetail
+        fields = "__all__"

@@ -85,6 +85,12 @@ class UserInfoSerializer(serializers.ModelSerializer):
         return full_name
 
 
+class ResetEmailVerificationSerializer(serializers.ModelSerializer):
+    email = serializers.EmailField(max_length=555)
+
+    class Meta:
+        model = User
+        fields = ['email']
 
 
 class EmailVerificationSerializer(serializers.ModelSerializer):

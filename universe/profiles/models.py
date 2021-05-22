@@ -2,11 +2,13 @@ from django.db import models
 from django.db.models import Q
 from django.contrib.auth import get_user_model
 from django.db.models.signals import post_save
-from blog.models import Blog
+from blog.models import Blog, Comment
 from django.utils.text import slugify
 from django.db.models.signals import pre_save
 from markdown_deux import markdown
 from django.conf import settings
+from groups.models import Group, MyBlog, Message
+from pages.models import Page
 
 # Create your models here.
 
@@ -58,6 +60,9 @@ class Profile(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     update_at = models.DateTimeField(auto_now=True)
     blogs = models.ManyToManyField(USER, related_name='blog_counts', blank=True, through="Blog_Lists")
+    groups = models.ManyToManyField(USER, related_name='groups_counts', blank=True, through="Group_Lists")
+    pages = models.ManyToManyField(USER, related_name='pages_counts', blank=True, through="Page_Lists")
+    replies = models.ManyToManyField(USER, related_name='replies_counts', blank=True, through="Comment_Lists")
     followers = models.ManyToManyField(USER, related_name='my_followings', blank=True,  through="Follow")
     following = models.ManyToManyField(USER, related_name='profile_follows', blank=True, through="profiles_followed")
 
@@ -99,3 +104,33 @@ class Blog_lists(models.Model):
     user = models.ForeignKey(USER, on_delete=models.CASCADE)
     profile = models.ForeignKey(Profile, on_delete=models.CASCADE)
     blog = models.ForeignKey(Blog, on_delete=models.CASCADE)
+
+
+class Group_lists(models.Model):
+    user = models.ForeignKey(USER, on_delete=models.CASCADE)
+    profile = models.ForeignKey(Profile, on_delete=models.CASCADE)
+    blog = models.ForeignKey(Group, on_delete=models.CASCADE)
+
+
+class MyBlog_lists(models.Model):
+    user = models.ForeignKey(USER, on_delete=models.CASCADE)
+    profile = models.ForeignKey(Profile, on_delete=models.CASCADE)
+    blog = models.ForeignKey(MyBlog, on_delete=models.CASCADE)
+
+
+class Page_lists(models.Model):
+    user = models.ForeignKey(USER, on_delete=models.CASCADE)
+    profile = models.ForeignKey(Profile, on_delete=models.CASCADE)
+    blog = models.ForeignKey(Page, on_delete=models.CASCADE)
+
+
+class Comment_lists(models.Model):
+    user = models.ForeignKey(USER, on_delete=models.CASCADE)
+    profile = models.ForeignKey(Profile, on_delete=models.CASCADE)
+    blog = models.ForeignKey(Comment, on_delete=models.CASCADE)
+
+
+class Message_lists(models.Model):
+    user = models.ForeignKey(USER, on_delete=models.CASCADE)
+    profile = models.ForeignKey(Profile, on_delete=models.CASCADE)
+    blog = models.ForeignKey(Message, on_delete=models.CASCADE)

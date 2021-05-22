@@ -1,7 +1,9 @@
 from rest_framework import serializers
 from .models import Profile, Follow, profiles_followed
 from django.conf import settings
-from blog.models import Blog
+from blog.models import Blog, Comment
+from groups.models import Group, MyBlog, Message
+from pages.models import Page, Blogs
 
 ACTIONS = settings.ACTIONS
 
@@ -10,6 +12,9 @@ class ProfileSerializer(serializers.ModelSerializer):
     followers = serializers.SerializerMethodField(read_only=True)
     following = serializers.SerializerMethodField(read_only=True)
     blogs = serializers.SerializerMethodField(read_only=True)
+    groups = serializers.SerializerMethodField(read_only=True)
+    pages = serializers.SerializerMethodField(read_only=True)
+    replies = serializers.SerializerMethodField(read_only=True)
 
     class Meta:
         model = Profile
@@ -24,9 +29,35 @@ class ProfileSerializer(serializers.ModelSerializer):
     def get_blogs(self, obj):
         user = obj.user
         qs= Blog.objects.filter(user = user)
+        blog_lists = int(qs.count())
+        vd = MyBlog.objects.filter(owner = user)
+        myblog = int(vd.count())
+        vq = Blogs.objects.filter(user = user)
+        blog = int(vq.count())
+        blogs = blog_lists + myblog + blog
+        return blogs
+
+    def get_groups(self, obj):
+        user = obj.user
+        qs= Group.objects.filter(owner = user)
         blog_lists = qs.count()
         return blog_lists
 
+    def get_pages(self, obj):
+        user = obj.user
+        qs= Page.objects.filter(users = user)
+        blog_lists = qs.count()
+        return blog_lists
+
+    def get_replies(self, obj):
+        user = obj.user
+        qs= Comment.objects.filter(user = user)
+        blog_lists = int(qs.count())
+        vd = Message.objects.filter(owner = user)
+        myblog = int(vd.count())
+        blogs = blog_lists + myblog
+        return blogs
+        
 
 class CreateProfileSerializer(serializers.Serializer):
     first_name = serializers.CharField(max_length=100, required=False)

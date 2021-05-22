@@ -20,22 +20,11 @@ ACTIONS = settings.ACTIONS
 
 # Create your views here.
 
-class CraeteProfileView(generics.CreateAPIView):
-    """
-    Create your Profile
-    """
-    serializer_class    = CreateProfileSerializer
-    permission_classes  = [IsAuthenticated]
 
-    def get_queryset(self):
-        Profile.objects.all()
-
-    def perform_create(self, serializer):
-        serializer.save(user =self.request.user)
 
 class UpdateProfileView(generics.RetrieveUpdateDestroyAPIView):
     """
-    Updates and Delete Uses Profiles
+    Updates and Delete User Profiles
     """
     lookup                      = 'pk'
     serializer_class            = ProfileSerializer
@@ -44,6 +33,9 @@ class UpdateProfileView(generics.RetrieveUpdateDestroyAPIView):
     def get_queryset(self):
         qs = Profile.objects.all()
         return qs
+
+    def patch(self, request, *args, **kwargs):
+        serializer.save(user = request.user)
 
 class MyProfileView(generics.ListAPIView):
     """

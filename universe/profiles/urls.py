@@ -3,7 +3,7 @@ from profiles import views
 
 
 urlpatterns = [
-    path('Profile/create', views.CraeteProfileView.as_view()),
+    #path('Profile/create', views.CraeteProfileView.as_view()),
     path('Profile/<int:pk>/detail', views.UpdateProfileView.as_view()),
     path('Profile/user', views.MyProfileView.as_view()),
     path('Profile/', views.GetUserView.as_view()),
